@@ -50,7 +50,7 @@ class Document extends React.Component {
   //   this.socket.emit('join', {doc: });
   }
 
-  componentDidMount() {
+  componentWillMount() {
     // const contentState = this.state.editorState.getCurrentContent(); 
     // const stringifiedContent = JSON.stringify(convertToRaw(contentState));
 
@@ -193,7 +193,7 @@ class Document extends React.Component {
   render() {
     return (
       <div>
-        <Link to='/'>Home</Link>
+        <Link to='/Portal'>Home</Link>
         <h1>{this.props.title}</h1>
         <h3>ID: {this.props.docId}</h3>
         <RaisedButton 

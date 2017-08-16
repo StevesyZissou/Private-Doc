@@ -1,50 +1,25 @@
 import React from 'react';
 import axios from 'axios';
+
+// React router stuff 
 import { Link } from 'react-router-dom';
+
+// Material UI stuff 
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
 
+// Redux stuff 
+import { logout, updatePortal } from '../actions/index';
+import {connect} from 'react-redux'; 
+import PropTypes from 'prop-types';
+
 class Portal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      newDocName: '',
-      documents: [],
-      userId: ''
-    };
+  logOut() {
+
   }
 
-  componentDidMount() {
-    console.log(this.props.userId);
-    axios.post('http://localhost:3000/docsList', {
-      userId: this.props.userId
-    })
-    .then((res) => {
-      var docs = [];
-      console.log(res);
-      res.data.forEach(function(doc) {
-        docs.push(doc);
-      });
-      this.setState({documents: docs});
-      this.props.setDocs(docs);
-      console.log(this.state);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-    // axios.get('/docslist'), {
-    //   params: {
-    //     userId: this.state.userId
-    //   }
-    // }
-    // .then(function(response) {
-    //   this.setState({
-    //     documents: response
-    //   });
-    // })
-    // .catch(function(error) {
-    //   console.log(error);
-    // });
+  componentWillMount() {
+    console.log(this.props);
   }
 
   handleNewDocName(event) {
@@ -79,18 +54,15 @@ class Portal extends React.Component {
   // }
 
   createDoc() {
+    console.log(this.props);
     axios.post('http://localhost:3000/createDoc', {
       userId: this.props.userId, 
       docName: this.state.newDocName, 
       editorState: null
     })
     .then((res) => {
-      console.log(res);
-      var docs = this.state.documents;
-      docs.unshift(res.data);
-      this.setState({documents: docs});
-      this.props.setDocs(docs);
-      console.log(this.state);
+      console.log(res.data.user.docs);
+      this.props.handleUpdatePortal(res.data.user.docs);
     })
     .catch((err) => {
       console.log(err);
@@ -102,8 +74,14 @@ class Portal extends React.Component {
   }
 
   render() {
+    console.log(this.props.docs);
     return (
       <div>
+        <RaisedButton 
+          label= "Logout"
+          primary={true}
+          onClick = {() => this.props.handleLogOut()}
+        />   
         <TextField
           onChange={(event) => this.handleNewDocName(event)}
           hintText="Document name"
@@ -115,10 +93,10 @@ class Portal extends React.Component {
         />
         <nav>
           <ul>
-            {this.state.documents.map(doc => 
+            {this.props.docs.map(doc => 
               <li key={doc._id}><Link to={'/'+doc._id}>{doc.title}</Link></li>
             )}
-            <li><Link to='/Document1'>Document 1</Link></li>
+            {/* <li><Link to='/Document1'>Document 1</Link></li> */}
             {/* map over the documents in the state to get a list of the documents */}
           </ul>
         </nav>
@@ -128,4 +106,26 @@ class Portal extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    userId: state.userId, 
+    docs: state.docs
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    handleLogOut: () => {dispatch(logout());},
+    handleUpdatePortal: (docs) => {dispatch(updatePortal(docs));}
+  };
+};
+
+Portal.propTypes = {
+  handleLogOut: PropTypes.func,
+  handleUpdatePortal: PropTypes.func
+}; 
+
+Portal = connect(mapStateToProps, mapDispatchToProps)(Portal); 
+
 export default Portal;

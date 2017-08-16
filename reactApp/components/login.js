@@ -1,11 +1,15 @@
 import React from 'react';
-import { Link, hashHistory  } from 'react-router';
 import axios from 'axios';
 
 // Material UI stuff
 import TextField from 'material-ui/TextField';
 import RaisedButton from 'material-ui/RaisedButton';
 
+// Redux stuff 
+import { login } from '../actions/index';
+import { Redirect } from 'react-router';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 
 class Login extends React.Component {
   constructor(props) {
@@ -17,10 +21,8 @@ class Login extends React.Component {
     };
   }
 
-  componentDidMount() {
-    //little confused by this DidMount command
-    console.log(this.props.router);
-    console.log(this.context.router);
+  componentWillMount() {
+    console.log(this.props);
     axios.get('http://localhost:3000/')
     .then((res) => {
       this.setState({greeting: res.data});
@@ -47,7 +49,7 @@ class Login extends React.Component {
     .then((res) => {
       console.log(res.data);
       console.log("you have successfully sent a login request!");
-      // this.props.history.push('/Home');
+      this.props.handleLogin(res.data.userId, res.data.docs);
     })
     .catch((err) => {
       console.log(err);
@@ -57,6 +59,7 @@ class Login extends React.Component {
   render () {
     return (
       <div>
+        {this.props.userId ? <Redirect to="/Portal" /> : <div></div>}
         <h3>Login </h3>
         <h3>{this.state.greeting}</h3>
         <TextField
@@ -68,9 +71,31 @@ class Login extends React.Component {
           hintText="Enter a password"
         />
         <RaisedButton label="Login" primary={true} onClick={() => this.loginUser()}/>
+        <RaisedButton label="Woops! I actually need to create an account" primary={true} 
+          onClick={() => console.log('go back to register')}
+        />
       </div>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    userId: state.userId
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    handleLogin: (userId, docs) => {dispatch(login(userId, docs));}
+  };
+};
+
+Login.propTypes = {
+  userId: PropTypes.string,
+  handleLogin: PropTypes.func
+};
+
+Login = connect(mapStateToProps, mapDispatchToProps)(Login);
 
 export default Login;

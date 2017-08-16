@@ -1,0 +1,4 @@
+// Questions 
+1. yarn dev didn't work but yarn run dev did. Why? What's the difference between the two?  
+2. Conditional rendering for whether a user is logged in our not. See Router and the path '/' that is commented out. The ternary operator with an empty div? (See Login)
+3. I have to hit login twice in order to login. If the redux state changes, does not cause rerendering of the components that are connected to the redux state? 

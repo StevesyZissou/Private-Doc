@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, hashHistory, Redirect  } from 'react-router';
+import { Redirect } from 'react-router';
 // Axios 
 import axios from 'axios';
 
@@ -13,13 +13,18 @@ import RaisedButton from 'material-ui/RaisedButton';
 // import FontIcon from 'material-ui/FontIcon';
 // import * as colors from 'material-ui/styles/colors'
 
+// Redux stuff 
+import { connect } from 'react-redux';
+
 class Register extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       username: '', 
       password: '', 
-      loggedIn: false
+      greeting: '',
+      loggedIn: false, 
+      haveAccount: false
     };
   }
 
@@ -51,11 +56,15 @@ class Register extends React.Component {
     .then((res) => {
       console.log(res.data);
       this.setState({loggedIn: true});
-      // And I want to pass along the userid that would be contained in res!
     })  
     .catch((err) => {
       console.log(err);
     });
+  }
+
+  goToLogin () {
+    console.log('flag');
+    this.setState({haveAccount: true});
   }
 
   render () {
@@ -72,7 +81,10 @@ class Register extends React.Component {
           hintText="Enter a password" 
         />
         <RaisedButton label="Register" primary={true} onClick={() => this.registerUser()}/>
-        {this.state.loggedIn ? <Redirect to="/Home" /> : <div></div> }
+        {this.state.loggedIn ? <Redirect to="/Portal" /> : <div></div> }
+        <h3> Already have an account? </h3>
+        <RaisedButton label="Login" primary={true} onClick={() => this.goToLogin()} />
+        {this.state.haveAccount ? <Redirect to="/Login" /> : <div></div>}  
       </div>
     );
   }  

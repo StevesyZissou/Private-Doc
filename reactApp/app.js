@@ -1,5 +1,8 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
+import reducer from './reducers/index';
 import Container from './components/Container';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -11,18 +14,15 @@ injectTapEventPlugin();
 // import Draft from '../node_modules/draft-js/dist/Draft.css';
 require ('./css/main.css');
 
-// import Welcome from './components/Welcome';
-/* This can check if your electron app can communicate with your backend */
-// fetch('http://localhost:3000')
-// .then(resp => resp.text())
-// .then(text => console.log(text))
-// .catch(err => {throw err})
+// Redux setup 
+const store = createStore(reducer);
+console.log('store = ', store.getState());
 
 ReactDOM.render(
   <MuiThemeProvider>
-      <div>
-        <Container />
-      </div>
+    <Provider store={store}>
+      <Container />
+    </Provider>
   </MuiThemeProvider>,
    document.getElementById('root')
 );

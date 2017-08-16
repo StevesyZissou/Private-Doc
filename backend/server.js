@@ -28,7 +28,7 @@ app.use(session({
 
 
 // PASSPORT SETUP
-//serializeUser determines, which data of the user object should be stored in the session.
+//serializeUser determines which data of the user object should be stored in the session.
 //it only stores the user id to be used by deserializeUser thereafter
 // serializeUser method is attached to the session as req.session.passport.user = {id:'..'}
 passport.serializeUser(function(user, done) {
@@ -74,29 +74,38 @@ app.use(passport.session());
 // TODO: edit res.send to res.json +edit .
  // so it authenticates the user
 
+// Generic GET / 
+app.get('/', function(req, res){
+  res.json('Successfully made contact with the server!');
+});
+
 // Handling a registration request
 app.post('/register', function(req, res) {
   console.log('req.body = ', req.body);
-
   var newUser = new User({
     username: req.body.username,
-    password: req.body.password,
+    password: req.body.password
   });
   newUser.save(function(err, user) {
     if (err) {
       console.log("error", err);
       res.status(500).json({ error: err });
     } else {
+      console.log('successfully registered a new user!');
       res.json({success:true});
     }
   });
 });
 
-
-//**all router stuff may be unecesarry. Delete if needed
 // POST Login page
-app.post('/login', passport.authenticate('local'), function(req, res) {
-  res.json({success:true});
+app.post('/login', function(req, res) {
+  User.findOne({username: req.body.username, password: req.body.password}, function(err, user) {
+    if (err) {
+      console.log('Error!: ', err);
+    }
+    console.log('Successfully found the user in the DB. User = ', user);
+    res.json({userId: user._id, docs: user.docs});
+  });
 });
 
 app.post('/register', function(req, res) {
@@ -106,22 +115,22 @@ app.post('/register', function(req, res) {
     //     error: "Passwords don't match."
     //   });
     // }
-    var u = new models.User({
-      username: req.body.username,
-      password: req.body.password
-    });
-    u.save(function(err, user) {
-      if (err) {
-        console.log(err);
-        res.status(500).json({success: true});
-        return;
-      }
-      console.log(user);
-      res.json({success:true});
+  var u = new models.User({
+    username: req.body.username,
+    password: req.body.password
+  });
+  u.save(function(err, user) {
+    if (err) {
+      console.log(err);
+      res.status(500);
+      return;
+    }
+    console.log(user);
+    res.json({success:true});
       //NOTE: no res.redirect 'login' if using express router. React router requires redirect
       //to be handled on the front-end. If not using react, we can do res.redirects on the
       //back-end.
-    });
+  });
 });
 
 
@@ -132,8 +141,8 @@ app.post('/docsList', function(req, res) {
   console.log(req.body);
   Doc.find({collabs : req.body.userId})
     .exec()
-    .then((documents) => {
-      res.send(documents);
+    .then((docs) => {
+      res.json(docs);
     });
 });
 
@@ -147,15 +156,27 @@ app.post('/createDoc', function(req, res) {
     owner: req.body.userId, 
     editorState: null
   });
-  newDoc.save(function(err, doc) {
-    if (err) {
-      console.log("error", err);
-    } else {
-      console.log(doc);
-      res.send(doc);
-    }
-  });
-});
+  newDoc.save()
+    .then((doc) => {
+      User.findOne({_id: doc.owner}, function(err, user) {
+        if (err) {
+          console.log(err);
+        } else {
+          var newDocs = user.docs; 
+          newDocs.push(doc._id); 
+          console.log(newDocs);
+          User.findOneAndUpdate({_id: doc.owner}, {docs: newDocs}, {new: true}, function(err, user) {
+            if (err) {
+              console.log(err);
+            } else {
+              res.json({user});
+            }
+          });
+        }
+      });
+    });
+});  
+
 
 // Getting the info for a document 
 app.post('/doc', function(req, res){
@@ -176,6 +197,7 @@ app.post('/saveDoc', function(req, res) {
       res.send(doc);
     }
   });
+});   
 
   // GET Logout page
 app.get('/logout', function(req, res) {
@@ -184,7 +206,7 @@ app.get('/logout', function(req, res) {
 });
 
 
-app.listen(3000, function () {
+app.listen(3000, function (){
   console.log('Backend server for Electron App running on port 3000!');
 });
 
