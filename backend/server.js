@@ -138,12 +138,13 @@ app.post('/register', function(req, res) {
 
 // Retrieving the list of document upon logging in
 app.post('/docsList', function(req, res) {
-  console.log(req.body);
-  Doc.find({collabs : req.body.userId})
-    .exec()
-    .then((docs) => {
-      res.json(docs);
-    });
+  User.findOne({_id: req.body.userId})
+  .populate('docs')
+  .exec()
+  .then((user) => {
+    res.json({user});
+  })
+  .catch((err) => console.log(err));
 });
 
 // Creating a new document
@@ -165,18 +166,18 @@ app.post('/createDoc', function(req, res) {
           var newDocs = user.docs; 
           newDocs.push(doc._id); 
           console.log(newDocs);
-          User.findOneAndUpdate({_id: doc.owner}, {docs: newDocs}, {new: true}, function(err, user) {
-            if (err) {
-              console.log(err);
-            } else {
-              res.json({user});
-            }
-          });
+          User.findOneAndUpdate({_id: doc.owner}, {docs: newDocs}, {new: true})
+          .populate('docs') 
+          .exec()
+          .then((user) => {
+            console.log(user);
+            res.json({user});
+          })
+          .catch((err) => console.log(err));
         }
       });
     });
-});  
-
+}); 
 
 // Getting the info for a document 
 app.post('/doc', function(req, res){

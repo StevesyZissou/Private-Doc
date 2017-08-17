@@ -15,43 +15,24 @@ import PropTypes from 'prop-types';
 
 class Portal extends React.Component {
   logOut() {
-
+    this.props.handleLogOut();
   }
 
   componentWillMount() {
-    console.log(this.props);
+    console.log("cwm");
+    axios.post('http://localhost:3000/docsList', {
+      userId: this.props.userId
+    })
+    .then((res) => {
+      this.props.handleUpdatePortal(res.data.user.docs);
+      console.log("mount and load")
+    })
+    .catch((err) => {console.log(err);});
   }
 
   handleNewDocName(event) {
     this.setState({newDocName: event.target.value});
   }
-  //
-  // createDoc() {
-  //   axios.post('http://localhost:3000/createDoc', {
-  //     userId: this.state.userId,
-  //     docName: this.state.newDocName
-  //   })
-  //   .then((res) => {
-  //     console.log(res);
-  //
-  //
-  // createDoc(){
-  //   axios.post('/createDoc'), {
-  //     params: {
-  //       userId: this.state.userId
-  //     }
-  //   }
-  //   .then(function (response) {
-  //     axios.get('/edit/:docId'), {
-  //       params: {
-  //         userId: this.state.userId
-  //       }
-  //     }
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
-  // }
 
   createDoc() {
     console.log(this.props);
@@ -64,9 +45,7 @@ class Portal extends React.Component {
       console.log(res.data.user.docs);
       this.props.handleUpdatePortal(res.data.user.docs);
     })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => {console.log(err);});
   }
   
   loadDoc(){
@@ -96,8 +75,6 @@ class Portal extends React.Component {
             {this.props.docs.map(doc => 
               <li key={doc._id}><Link to={'/'+doc._id}>{doc.title}</Link></li>
             )}
-            {/* <li><Link to='/Document1'>Document 1</Link></li> */}
-            {/* map over the documents in the state to get a list of the documents */}
           </ul>
         </nav>
         <input type="text" placeholder="Paste Document ID" />

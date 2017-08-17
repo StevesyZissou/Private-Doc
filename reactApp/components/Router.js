@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Redirect } from 'react-router';
+import { Switch, Route, Redirect, withRouter } from 'react-router';
 import Portal from './Portal';
 import Document from './Document';
 import Register from './Register';
@@ -28,30 +28,33 @@ class Router extends React.Component {
   // }
 
   render() {
+    console.log(this.props.docs);
     return (
       <div>
         <Switch>
           {/* <Route path='/' 
             render={() => this.props.userId ? <div></div> : <Redirect to="/Login" /> }
           />  */}
-          <Route exact path='/' 
-            render={() => this.props.userId ? <Redirect to="/Portal" /> : <Redirect to="/Login" /> }
-          /> 
-          <Route exact path='/Login' 
+          
+          <Route path='/Login' 
             render={() => <Login />}
           />
-          <Route exact path='/Portal' render={() => 
+          <Route path='/Portal' render={() => 
             <Portal 
               userId={this.props.userId} 
               setDocs={(docs) => this.setDocs(docs)}
             />} 
           />
-          {this.props.docs ? this.props.docs.map(doc => 
-            <Route key={doc._id} exact path={'/'+doc._id} render={() => 
+          {this.props.docs.map(doc => {
+            console.log(doc._id);
+            return (<Route key={doc._id} path={'/'+doc._id} render={() => 
               <Document docId={doc._id} />} 
-            />
-          ) : <div></div>}
-          <Route exact path='/Document1' component={Document} />
+            />);
+            }
+          ) }
+          <Route path='/' 
+            render={() => this.props.userId ? <Redirect to="/Portal" /> : <Redirect to="/Login" /> }
+          /> 
         </Switch>
       </div>
     );
@@ -70,6 +73,6 @@ Router.propTypes = {
   docs: PropTypes.array
 };
 
-Router = connect(mapStateToProps, null)(Router);
+Router = withRouter(connect(mapStateToProps, null)(Router));
 
 export default Router;

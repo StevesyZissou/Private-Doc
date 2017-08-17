@@ -10,11 +10,12 @@ const userSchema = mongoose.Schema({
     type: String,
     required: true
   }, 
-  docs: {
-    type: Array, 
-    required: false, 
-    default: []
-  }
+  docs: [
+    {
+      type: mongoose.Schema.ObjectId, 
+      ref: 'Doc'
+    }
+  ]
 });
 
 const documentSchema = mongoose.Schema({
