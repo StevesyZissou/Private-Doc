@@ -1,4 +1,4 @@
-const reducer = (state = {userId: '5990c91c7fe732141da75968', docs: []}, action) => {
+const reducer = (state = {userId: '', docs: []}, action) => {
   switch(action.type) {
   case 'LOGIN': 
     var newState = {
@@ -12,6 +12,7 @@ const reducer = (state = {userId: '5990c91c7fe732141da75968', docs: []}, action)
       userId: state.userId, 
       docs: action.docs
     };
+    console.log('state', newState2);
     return newState2; 
   case 'LOGOUT': 
     var newState3 = {
@@ -25,3 +26,5 @@ const reducer = (state = {userId: '5990c91c7fe732141da75968', docs: []}, action)
 };
 
 export default reducer;
+
+// sample userId: '5990c91c7fe732141da75968'

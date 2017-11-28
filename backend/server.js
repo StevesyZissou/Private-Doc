@@ -1,7 +1,8 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
 
-// Extra mongoose setup???
 const bodyParser = require('body-parser');
 
 // Importing our models
@@ -102,6 +103,7 @@ app.post('/login', function(req, res) {
   User.findOne({username: req.body.username, password: req.body.password}, function(err, user) {
     if (err) {
       console.log('Error!: ', err);
+      res.send('Error! The user was not found');
     }
     console.log('Successfully found the user in the DB. User = ', user);
     res.json({userId: user._id, docs: user.docs});

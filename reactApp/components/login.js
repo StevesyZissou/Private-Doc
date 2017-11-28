@@ -11,25 +11,38 @@ import { Redirect } from 'react-router';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
+const styles = {
+  logo: {
+    width: '30%', 
+    height: '30%', 
+    marginBottom: '5%'
+  }, 
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center', 
+    alignItems: 'center',
+    width: '100%', 
+    height: '100%', 
+    fontFamily: 'Roboto, sans-serif'
+  }, 
+  createAccountWrapper: {
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'space-around', 
+    width: '50%',
+    marginTop: '5%'
+  }
+};
+
 class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      greeting: 'Welcome to the MOQ DOCS Login!',
       username: '',
-      password: ''
+      password: '', 
+      register: false 
     };
-  }
-
-  componentWillMount() {
-    console.log(this.props);
-    axios.get('http://localhost:3000/')
-    .then((res) => {
-      this.setState({greeting: res.data});
-    })
-    .catch(function(err) {
-      console.log(err);
-    });
   }
 
   handleUsername (event) {
@@ -56,12 +69,17 @@ class Login extends React.Component {
     });
   }
 
+  createAccount() {
+    this.setState({register: true}); 
+  }
+
   render () {
     return (
-      <div>
+      <div style={styles.container}>
+        <img style={styles.logo} src="../reactApp/PrivateDoc.png" />
         {this.props.userId ? <Redirect to="/Portal" /> : <div></div>}
+        {this.state.register ? <Redirect to="/Register" /> : <div></div>}
         <h3>Login </h3>
-        <h3>{this.state.greeting}</h3>
         <TextField
           onChange={(event) => this.handleUsername(event)}
           hintText="Enter a username"
@@ -70,10 +88,13 @@ class Login extends React.Component {
           onChange={(event) => this.handlePassword(event)}
           hintText="Enter a password"
         />
-        <RaisedButton label="Login" primary={true} onClick={() => this.loginUser()}/>
-        <RaisedButton label="Woops! I actually need to create an account" primary={true} 
-          onClick={() => console.log('go back to register')}
-        />
+        <RaisedButton label="Login" onClick={() => this.loginUser()}/>
+        <div style={styles.createAccountWrapper}>
+          <h4>Don't have account? </h4>
+          <RaisedButton label="Create an Account"
+            onClick={() => this.createAccount()}
+          />
+        </div>
       </div>
     );
   }

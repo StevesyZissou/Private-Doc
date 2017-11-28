@@ -28,34 +28,34 @@ class Router extends React.Component {
   // }
 
   render() {
-    console.log(this.props.docs);
+    // console.log('Router: this.props.userId = ', this.props.userId);
     return (
       <div>
-        <Switch>
-          {/* <Route path='/' 
+          <Route path='/' 
             render={() => this.props.userId ? <div></div> : <Redirect to="/Login" /> }
-          />  */}
+          /> 
           
           <Route path='/Login' 
             render={() => <Login />}
           />
+
+          <Route path='/Register' 
+            render={() => <Register />}
+          />
+
           <Route path='/Portal' render={() => 
             <Portal 
               userId={this.props.userId} 
-              setDocs={(docs) => this.setDocs(docs)}
             />} 
           />
-          {this.props.docs.map(doc => {
-            console.log(doc._id);
-            return (<Route key={doc._id} path={'/'+doc._id} render={() => 
+          {this.props.docs ? this.props.docs.map(doc => 
+            <Route key={doc._id} path={'/'+doc._id} render={() => 
               <Document docId={doc._id} />} 
-            />);
-            }
-          ) }
-          <Route path='/' 
+            />) : <div></div>
+          }
+          {/* <Route path ='/' 
             render={() => this.props.userId ? <Redirect to="/Portal" /> : <Redirect to="/Login" /> }
-          /> 
-        </Switch>
+          />  */}
       </div>
     );
   }

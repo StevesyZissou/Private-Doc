@@ -13,19 +13,31 @@ import { logout, updatePortal } from '../actions/index';
 import {connect} from 'react-redux'; 
 import PropTypes from 'prop-types';
 
+const styles = {
+  logo: {
+    maxWidth: '75px', 
+    maxHeight: '75px'
+  }, 
+  navBar: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: '5%', 
+    width: '100%'
+  }
+};
+
 class Portal extends React.Component {
   logOut() {
     this.props.handleLogOut();
   }
 
   componentWillMount() {
-    console.log("cwm");
     axios.post('http://localhost:3000/docsList', {
       userId: this.props.userId
     })
     .then((res) => {
       this.props.handleUpdatePortal(res.data.user.docs);
-      console.log("mount and load")
+      console.log('Portal: docs after post to /docsList in ComponentWillMount', res.data.user.docs);
     })
     .catch((err) => {console.log(err);});
   }
@@ -42,7 +54,7 @@ class Portal extends React.Component {
       editorState: null
     })
     .then((res) => {
-      console.log(res.data.user.docs);
+      console.log('RES', res.data.user.docs);
       this.props.handleUpdatePortal(res.data.user.docs);
     })
     .catch((err) => {console.log(err);});
@@ -53,14 +65,16 @@ class Portal extends React.Component {
   }
 
   render() {
-    console.log(this.props.docs);
+    console.log('Portal: this.props.docs = ', this.props.docs);
     return (
       <div>
-        <RaisedButton 
-          label= "Logout"
-          primary={true}
-          onClick = {() => this.props.handleLogOut()}
-        />   
+        <div style={styles.navBar}>
+          <RaisedButton 
+            label= "Logout"
+            onClick = {() => this.props.handleLogOut()}
+          />   
+          <img style={styles.logo} src="../reactApp/PrivateDoc.png" />
+        </div>
         <TextField
           onChange={(event) => this.handleNewDocName(event)}
           hintText="Document name"
@@ -72,9 +86,10 @@ class Portal extends React.Component {
         />
         <nav>
           <ul>
-            {this.props.docs.map(doc => 
+            {this.props.docs ? this.props.docs.map(doc => 
               <li key={doc._id}><Link to={'/'+doc._id}>{doc.title}</Link></li>
-            )}
+            )
+            : <div></div>}
           </ul>
         </nav>
         <input type="text" placeholder="Paste Document ID" />
