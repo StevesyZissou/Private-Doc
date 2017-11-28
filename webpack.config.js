@@ -6,6 +6,13 @@ module.exports = {
     path: __dirname + '/build',
     filename: 'app.bundle.js'
   },
+  plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        'FACEBOOK_APP_ID': JSON.stringify(process.env.FACEBOOK_APP_ID) 
+      } 
+    })
+  ],
   module: {
     rules: [
       {

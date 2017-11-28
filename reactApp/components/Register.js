@@ -1,5 +1,9 @@
 import React from 'react';
 import { Redirect } from 'react-router';
+
+// Redux stuff 
+import { connect } from 'react-redux';
+
 // Axios 
 import axios from 'axios';
 
@@ -13,8 +17,8 @@ import RaisedButton from 'material-ui/RaisedButton';
 // import FontIcon from 'material-ui/FontIcon';
 // import * as colors from 'material-ui/styles/colors'
 
-// Redux stuff 
-import { connect } from 'react-redux';
+// Facebook log in stuff 
+import FacebookLogin  from 'react-facebook-login';
 
 class Register extends React.Component {
   constructor(props) {
@@ -67,6 +71,11 @@ class Register extends React.Component {
     this.setState({haveAccount: true});
   }
 
+  responseFacebook (response) {
+    console.log(response);
+    //anything else you want to do(save to localStorage)...
+  }
+
   render () {
     return (
       <div>
@@ -82,6 +91,12 @@ class Register extends React.Component {
         />
         <RaisedButton label="Register" primary={true} onClick={() => this.registerUser()}/>
         {this.state.loggedIn ? <Redirect to="/Portal" /> : <div></div> }
+        <FacebookLogin
+          appId={process.env.FACEBOOK_APP_ID}
+          autoLoad={false}
+          fields="name,email,picture"
+          callback={this.responseFacebook} 
+        />
         <h3> Already have an account? </h3>
         <RaisedButton label="Login" primary={true} onClick={() => this.goToLogin()} />
         {this.state.haveAccount ? <Redirect to="/Login" /> : <div></div>}  
