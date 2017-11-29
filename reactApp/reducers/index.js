@@ -5,14 +5,12 @@ const reducer = (state = {userId: '', docs: []}, action) => {
       userId: action.userId, 
       docs: action.docs
     };
-    console.log('flag', newState);
     return newState; 
   case 'UPDATEPORTAL': 
     var newState2 = {
       userId: state.userId, 
       docs: action.docs
     };
-    console.log('state', newState2);
     return newState2; 
   case 'LOGOUT': 
     var newState3 = {

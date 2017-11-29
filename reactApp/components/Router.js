@@ -27,6 +27,7 @@ class Router extends React.Component {
   //   console.log(this.state.docs);
   // }
 
+  // OTTO: you changed the routes to make it easy to work on different components. Before finishing make sure that you change them back. 
   render() {
     // console.log('Router: this.props.userId = ', this.props.userId);
     return (

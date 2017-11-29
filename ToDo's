@@ -1,6 +1,8 @@
 What to work on: 
+
 Make it look good 
 Type up a readme
+Add marker indicating that another user had made changes 
 Finish implementing Facebook OAuth
-
-1. Figure out how to make dotenv work 
+Integrate sockets to allow for live updating 
+Figure out how to make dotenv work 

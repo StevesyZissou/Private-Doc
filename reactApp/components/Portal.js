@@ -13,6 +13,9 @@ import { logout, updatePortal } from '../actions/index';
 import {connect} from 'react-redux'; 
 import PropTypes from 'prop-types';
 
+// DraftJS stuff
+import {EditorState} from 'draft-js';
+
 const styles = {
   logo: {
     maxWidth: '75px', 
@@ -37,7 +40,6 @@ class Portal extends React.Component {
     })
     .then((res) => {
       this.props.handleUpdatePortal(res.data.user.docs);
-      console.log('Portal: docs after post to /docsList in ComponentWillMount', res.data.user.docs);
     })
     .catch((err) => {console.log(err);});
   }
@@ -47,25 +49,33 @@ class Portal extends React.Component {
   }
 
   createDoc() {
-    console.log(this.props);
     axios.post('http://localhost:3000/createDoc', {
       userId: this.props.userId, 
       docName: this.state.newDocName, 
-      editorState: null
+      editorState: EditorState.createEmpty()
     })
     .then((res) => {
-      console.log('RES', res.data.user.docs);
       this.props.handleUpdatePortal(res.data.user.docs);
     })
     .catch((err) => {console.log(err);});
   }
   
-  loadDoc(){
-
+  handleSharedDoc(event){
+    this.setState({sharedDocId: event.target.value});
   }
 
+  addSharedDoc() {
+    axios.post('http://localhost:3000/addSharedDoc', {
+      userId: this.props.userId,
+      docId: this.state.sharedDocId
+    })
+    .then((res) => {
+      this.props.handleUpdatePortal(res.data.user.docs);
+    })
+    .catch((err) => {console.log(err);})
+  }
+  
   render() {
-    console.log('Portal: this.props.docs = ', this.props.docs);
     return (
       <div>
         <div style={styles.navBar}>
@@ -86,14 +96,20 @@ class Portal extends React.Component {
         />
         <nav>
           <ul>
-            {this.props.docs ? this.props.docs.map(doc => 
+            {this.props.docs.map(doc => 
               <li key={doc._id}><Link to={'/'+doc._id}>{doc.title}</Link></li>
-            )
-            : <div></div>}
+            )}
           </ul>
         </nav>
-        <input type="text" placeholder="Paste Document ID" />
-        <input type="submit" value="Load Shared Document" onSubmit={()=>this.loadDoc()} />
+        <TextField 
+          onChange={(event) => this.handleSharedDoc(event)}
+          hintText="Paste a shared document ID here"
+        />
+        <RaisedButton 
+          label="Add this document to my Private Docs" 
+          primary={true}
+          onClick={() => this.addSharedDoc()}
+        />
       </div>
     );
   }

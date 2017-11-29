@@ -38,8 +38,10 @@ class Document extends React.Component {
     super(props);
     this.state = {
       editorState: EditorState.createEmpty(),
-      inlineStyles: {}
+      inlineStyles: {}, 
+      title: ''
     };
+    this.handleKeyCommand = this.handleKeyCommand.bind(this);
 
 
   //   this.socket = io('http://localhost:3000');
@@ -56,15 +58,16 @@ class Document extends React.Component {
 
     // JSON.stringify != JSON.parse 
     // convertToRaw != convertFromRaw 
-    console.log('made it here!');
     axios.post('http://localhost:3000/doc', {
       docId: this.props.docId,
     })
     .then((res) => {
-      console.log(res);
-      const destringifiedContent = convertFromRaw(JSON.parse(res.data.editorState)); 
-      const newEditorState = EditorState.createWithContent(destringifiedContent);
-      this.setState({editorState: newEditorState});
+      this.setState({title: res.data.title});
+      if (res.data.editorState) {
+        const destringifiedContent = convertFromRaw(JSON.parse(res.data.editorState)); 
+        const newEditorState = EditorState.createWithContent(destringifiedContent);
+        this.setState({editorState: newEditorState})
+      }
     })
     .catch((err) => {
       console.log(err);
@@ -80,6 +83,15 @@ class Document extends React.Component {
     this.setState({
       editorState: editorState
     });
+  }
+
+  handleKeyCommand(command, editorState) {
+    const newState = RichUtils.handleKeyCommand(editorState, command);
+    if (newState) {
+      this.onChange(newState);
+      return 'handled';
+    }
+    return 'not-handled';
   }
 
   toggleFormat(e, style, block) {
@@ -173,10 +185,7 @@ class Document extends React.Component {
   // -------------------------------------------------------------------------------------
   saveHandler() {
     const contentState = this.state.editorState.getCurrentContent(); 
-    console.log('contentState = ', contentState);
-
     const stringifiedContent = JSON.stringify(convertToRaw(contentState));
-    console.log('stringifiedContent', stringifiedContent);
 
     axios.post('http://localhost:3000/saveDoc', {
       docId: this.props.docId,
@@ -194,7 +203,7 @@ class Document extends React.Component {
     return (
       <div>
         <Link to='/Portal'>Home</Link>
-        <h1>{this.props.title}</h1>
+        <h1>{this.state.title}</h1>
         <h3>ID: {this.props.docId}</h3>
         <RaisedButton 
           backgroundColor={colors.blue100}
@@ -217,6 +226,8 @@ class Document extends React.Component {
           editorState={this.state.editorState} 
           onChange={this.onChange.bind(this)}
           customStyleMap={this.state.inlineStyles}
+          handleKeyCommand={this.handleKeyCommand}
+          placeholder='Begin writing here...'
         />
       </div>
     );

@@ -1,4 +1,4 @@
-require('dotenv').config();
+// require('dotenv').config();
 
 const express = require('express');
 const app = express();
@@ -15,7 +15,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local');
 
 
-//allows us to use req.body
+// Allows us to use req.body
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 //..allows you to parse through cookie strings...may not be useful
@@ -93,7 +93,7 @@ app.post('/register', function(req, res) {
       res.status(500).json({ error: err });
     } else {
       console.log('successfully registered a new user!');
-      res.json({success:true});
+      res.json({user: user});
     }
   });
 });
@@ -140,6 +140,7 @@ app.post('/register', function(req, res) {
 
 // Retrieving the list of document upon logging in
 app.post('/docsList', function(req, res) {
+  console.log(req);
   User.findOne({_id: req.body.userId})
   .populate('docs')
   .exec()
@@ -165,7 +166,7 @@ app.post('/createDoc', function(req, res) {
         if (err) {
           console.log(err);
         } else {
-          var newDocs = user.docs; 
+          let newDocs = user.docs.slice(); 
           newDocs.push(doc._id); 
           console.log(newDocs);
           User.findOneAndUpdate({_id: doc.owner}, {docs: newDocs}, {new: true})
@@ -181,6 +182,24 @@ app.post('/createDoc', function(req, res) {
     });
 }); 
 
+// Adding a shared doc
+app.post('/addSharedDoc', function(req, res) {
+  User.findOne({_id: req.body.userId}, function(err, user) {
+    if (err) {
+      console.log(err);
+    } else {
+      let newDocs = user.docs.slice(); 
+      newDocs.push(req.body.docId);
+      User.findOneAndUpdate({_id:req.body.userId}, {docs: newDocs}, {new: true})
+      .populate('docs')
+      .exec()
+      .then((user) => {
+        res.json({user});
+      })
+      .catch((err) => console.log(err));
+    }
+  })
+})
 // Getting the info for a document 
 app.post('/doc', function(req, res){
   Doc.findOne({_id: req.body.docId}, function(err, doc){
