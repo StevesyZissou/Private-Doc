@@ -20,6 +20,20 @@ import RaisedButton from 'material-ui/RaisedButton';
 // Facebook log in stuff 
 import FacebookLogin  from 'react-facebook-login';
 
+// Styles 
+const styles = {
+  container: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center', 
+    alignItems: 'center',
+  }, 
+  div1: {
+    display: 'flex', 
+    alignItems: 'center'
+  }
+};
+
 class Register extends React.Component {
   constructor(props) {
     super(props);
@@ -77,9 +91,8 @@ class Register extends React.Component {
 
   render () {
     return (
-      <div>
+      <div style={styles.container}>
         <h3>Create an account </h3>
-        <h3>{this.state.greeting}</h3>
         <TextField 
           onChange={(event) => this.handleUsernameChange(event)} 
           hintText="Enter a username" 
@@ -88,17 +101,21 @@ class Register extends React.Component {
           onChange={(event) => this.handlePasswordChange(event)} 
           hintText="Enter a password" 
         />
-        <RaisedButton label="Register" primary={true} onClick={() => this.registerUser()}/>
+        <RaisedButton style={{display: 'inline'}} label="Register" primary={true} onClick={() => this.registerUser()}/>
         {this.state.loggedIn ? <Redirect to="/Portal" /> : <div></div> }
-        <FacebookLogin
-          appId={process.env.FACEBOOK_APP_ID}
-          autoLoad={false}
-          fields="name,email,picture"
-          callback={this.responseFacebook} 
-        />
-        <h3> Already have an account? </h3>
-        <RaisedButton label="Login" primary={true} onClick={() => this.goToLogin()} />
-        {this.state.haveAccount ? <Redirect to="/Login" /> : <div></div>}  
+        <div>
+          <h3 style={{display: 'inline'}}> Already have an account? </h3>
+          <RaisedButton style={{display: 'inline'}} label="Login" primary={true} onClick={() => this.goToLogin()} />
+          {this.state.haveAccount ? <Redirect to="/Login" /> : <div></div>}
+        </div>
+          <div style={{margin: '3vw'}}>
+            <FacebookLogin
+              appId={process.env.FACEBOOK_APP_ID}
+              autoLoad={false}
+              fields="name,email,picture"
+              callback={this.responseFacebook} 
+            />
+          </div>  
       </div>
     );
   }  
