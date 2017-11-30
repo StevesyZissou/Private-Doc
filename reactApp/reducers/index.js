@@ -1,4 +1,4 @@
-const reducer = (state = {userId: '', docs: []}, action) => {
+const reducer = (state = {userId: '5a1dae65a216d988cece0a83', docs: []}, action) => {
   switch(action.type) {
   case 'LOGIN': 
     var newState = {
@@ -25,4 +25,4 @@ const reducer = (state = {userId: '', docs: []}, action) => {
 
 export default reducer;
 
-// sample userId: '5990c91c7fe732141da75968'
+// sample userId: '5a1dae65a216d988cece0a83'

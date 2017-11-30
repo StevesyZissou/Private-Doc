@@ -43,7 +43,6 @@ class Document extends React.Component {
     };
     this.handleKeyCommand = this.handleKeyCommand.bind(this);
 
-
   //   this.socket = io('http://localhost:3000');
   //   this.socket.emit('hello', {name: 'Otto'});
   //   this.socket.on('helloBack', () => console.log('hello back'));
@@ -58,11 +57,12 @@ class Document extends React.Component {
 
     // JSON.stringify != JSON.parse 
     // convertToRaw != convertFromRaw 
+    console.log('flag');
     axios.post('http://localhost:3000/doc', {
       docId: this.props.docId,
     })
     .then((res) => {
-      this.setState({title: res.data.title});
+      this.setState({title: res.data.title, id: res.data._id});
       if (res.data.editorState) {
         const destringifiedContent = convertFromRaw(JSON.parse(res.data.editorState)); 
         const newEditorState = EditorState.createWithContent(destringifiedContent);
@@ -202,9 +202,9 @@ class Document extends React.Component {
   render() {
     return (
       <div>
-        <Link to='/Portal'>Home</Link>
         <h1>{this.state.title}</h1>
-        <h3>ID: {this.props.docId}</h3>
+        <h3>ID: {this.state.id}</h3>
+        <Link to='/Portal'>Home</Link>
         <RaisedButton 
           backgroundColor={colors.blue100}
           onClick={()=>this.saveHandler()}

@@ -6,3 +6,4 @@ Add marker indicating that another user had made changes
 Finish implementing Facebook OAuth
 Integrate sockets to allow for live updating 
 Figure out how to make dotenv work 
+Refactor server.js

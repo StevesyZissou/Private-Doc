@@ -47,7 +47,6 @@ class Register extends React.Component {
   }
 
   componentDidMount() {
-    console.log(this.props);
     axios.get('http://localhost:3000/')
     .then((res) => {
       this.setState({greeting: res.data});
@@ -71,7 +70,6 @@ class Register extends React.Component {
       password: this.state.password
     })
     .then((res) => {
-      console.log(res.data);
       this.setState({loggedIn: true});
     })  
     .catch((err) => {
@@ -80,7 +78,6 @@ class Register extends React.Component {
   }
 
   goToLogin () {
-    console.log('flag');
     this.setState({haveAccount: true});
   }
 

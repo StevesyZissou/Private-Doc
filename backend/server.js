@@ -55,7 +55,6 @@ passport.use(new LocalStrategy(function(username, password, done) {
     }
     // if no user present, auth failed
     if (!user) {
-      console.log(user);
       return done(null, false, { message: 'Incorrect username.' });
     }
     // if passwords do not match, auth failed
@@ -82,7 +81,6 @@ app.get('/', function(req, res){
 
 // Handling a registration request
 app.post('/register', function(req, res) {
-  console.log('req.body = ', req.body);
   var newUser = new User({
     username: req.body.username,
     password: req.body.password
@@ -92,7 +90,6 @@ app.post('/register', function(req, res) {
       console.log("error", err);
       res.status(500).json({ error: err });
     } else {
-      console.log('successfully registered a new user!');
       res.json({user: user});
     }
   });
@@ -105,7 +102,7 @@ app.post('/login', function(req, res) {
       console.log('Error!: ', err);
       res.send('Error! The user was not found');
     }
-    console.log('Successfully found the user in the DB. User = ', user);
+    console.log(user._id);
     res.json({userId: user._id, docs: user.docs});
   });
 });
@@ -127,7 +124,6 @@ app.post('/register', function(req, res) {
       res.status(500);
       return;
     }
-    console.log(user);
     res.json({success:true});
       //NOTE: no res.redirect 'login' if using express router. React router requires redirect
       //to be handled on the front-end. If not using react, we can do res.redirects on the
@@ -140,7 +136,6 @@ app.post('/register', function(req, res) {
 
 // Retrieving the list of document upon logging in
 app.post('/docsList', function(req, res) {
-  console.log(req);
   User.findOne({_id: req.body.userId})
   .populate('docs')
   .exec()
@@ -168,12 +163,10 @@ app.post('/createDoc', function(req, res) {
         } else {
           let newDocs = user.docs.slice(); 
           newDocs.push(doc._id); 
-          console.log(newDocs);
           User.findOneAndUpdate({_id: doc.owner}, {docs: newDocs}, {new: true})
           .populate('docs') 
           .exec()
           .then((user) => {
-            console.log(user);
             res.json({user});
           })
           .catch((err) => console.log(err));
@@ -203,19 +196,16 @@ app.post('/addSharedDoc', function(req, res) {
 // Getting the info for a document 
 app.post('/doc', function(req, res){
   Doc.findOne({_id: req.body.docId}, function(err, doc){
-    console.log(doc);
     res.send(doc);
   });
 });
 
 // Saving changes to a document 
 app.post('/saveDoc', function(req, res) {	
-  console.log(req.body);
   Doc.findOneAndUpdate({_id: req.body.docId}, {editorState: req.body.editorState}, function(err, doc) {
     if (err) {
       console.log('error', err);
     } else {
-      console.log(doc); 
       res.send(doc);
     }
   });

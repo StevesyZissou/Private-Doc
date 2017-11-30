@@ -16,7 +16,6 @@ require ('./css/main.css');
 
 // Redux setup 
 const store = createStore(reducer);
-console.log('store = ', store.getState());
 
 ReactDOM.render(
   <MuiThemeProvider>

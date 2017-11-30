@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 // Material UI stuff 
 import RaisedButton from 'material-ui/RaisedButton';
 import TextField from 'material-ui/TextField';
+import Popover, {PopoverAnimationVertical} from 'material-ui/Popover';
 
 // Redux stuff 
 import { logout, updatePortal } from '../actions/index';
@@ -17,19 +18,33 @@ import PropTypes from 'prop-types';
 import {EditorState} from 'draft-js';
 
 const styles = {
+  logout: {
+    verticalAlign: 'top'
+  },
   logo: {
-    maxWidth: '75px', 
-    maxHeight: '75px'
+    maxWidth: '170px',
+    marginLeft: '30%'
   }, 
-  navBar: {
+  header: {
     display: 'flex',
     flexDirection: 'row',
-    height: '5%', 
+    justifyContent: 'center', 
     width: '100%'
+  }, 
+  popover: {
+    padding: '10vw'
   }
 };
 
 class Portal extends React.Component {
+  constructor(props) {
+    super(props); 
+    this.state = {
+      createDocPopoverOpen: false,
+      addSharedDocPopoverOpen: false
+    };
+  }
+
   logOut() {
     this.props.handleLogOut();
   }
@@ -48,7 +63,33 @@ class Portal extends React.Component {
     this.setState({newDocName: event.target.value});
   }
 
-  createDoc() {
+  openCreateDocPopover(event) {
+    this.setState({
+      createDocPopoverOpen: true,
+      anchorElCreateDoc: event.currentTarget
+    }); 
+  }
+  
+  closeCreateDocPopover() {
+    this.setState({
+      createDocPopoverOpen: false,
+    });
+  }
+
+  openAddSharedDoc(event) {
+    this.setState({
+      addSharedDocPopoverOpen: true, 
+      anchorElSharedDoc: event.currentTarget
+    })
+  }
+
+  closeAddSharedDocPopover(event) {
+    this.setState({
+      addSharedDocPopoverOpen: false
+    })
+  }
+
+  createNewDoc() {
     axios.post('http://localhost:3000/createDoc', {
       userId: this.props.userId, 
       docName: this.state.newDocName, 
@@ -56,11 +97,13 @@ class Portal extends React.Component {
     })
     .then((res) => {
       this.props.handleUpdatePortal(res.data.user.docs);
+      this.closeCreateDocPopover(); 
     })
-    .catch((err) => {console.log(err);});
+    .catch((err) => console.log(err));
   }
-  
+    
   handleSharedDoc(event){
+    event.preventDefault();
     this.setState({sharedDocId: event.target.value});
   }
 
@@ -71,6 +114,7 @@ class Portal extends React.Component {
     })
     .then((res) => {
       this.props.handleUpdatePortal(res.data.user.docs);
+      this.closeCreateDocPopover();
     })
     .catch((err) => {console.log(err);})
   }
@@ -78,22 +122,43 @@ class Portal extends React.Component {
   render() {
     return (
       <div>
-        <div style={styles.navBar}>
-          <RaisedButton 
-            label= "Logout"
-            onClick = {() => this.props.handleLogOut()}
-          />   
-          <img style={styles.logo} src="../reactApp/PrivateDoc.png" />
+        <div style={{height:'100%'}}>
+          <span>
+            <RaisedButton 
+              style={styles.logout}
+              label= "Logout"
+              onClick = {() => this.props.handleLogOut()}
+            />
+          </span> 
+          <img style={styles.logo} src="../reactApp/PrivateDoc.png" /> 
         </div>
-        <TextField
-          onChange={(event) => this.handleNewDocName(event)}
-          hintText="Document name"
-        />
-        <RaisedButton
-          label = "Create a new document"
-          primary= {true}
-          onClick = {() => this.createDoc()}
-        />
+        <div>
+            <RaisedButton
+              label = "Create a new document"
+              primary={true}
+              onClick = {(event) => this.openCreateDocPopover(event)}
+            />
+              <Popover 
+                style={styles.popover}
+                open={this.state.createDocPopoverOpen}
+                anchorEl={this.state.anchorElCreateDoc}
+                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                onRequestClose={() => this.closeCreateDocPopover()}
+                animation={PopoverAnimationVertical}
+              > 
+                <TextField
+                  onChange={(event) => this.handleNewDocName(event)}
+                  hintText="Document name"
+                />
+                <RaisedButton 
+                  style={{marginLeft: '2vw'}}
+                  label= "Create"
+                  primary={true}
+                  onClick={() => this.createNewDoc()}
+                />
+              </Popover>
+          </div>
         <nav>
           <ul>
             {this.props.docs.map(doc => 
@@ -101,15 +166,33 @@ class Portal extends React.Component {
             )}
           </ul>
         </nav>
-        <TextField 
-          onChange={(event) => this.handleSharedDoc(event)}
-          hintText="Paste a shared document ID here"
-        />
-        <RaisedButton 
-          label="Add this document to my Private Docs" 
-          primary={true}
-          onClick={() => this.addSharedDoc()}
-        />
+        <div>
+          <RaisedButton
+            label = "Add a doc that someone shared with you"
+            primary={true}
+            onClick = {(event) => this.openAddSharedDoc(event)}
+          />
+          <Popover 
+            style={styles.popover}
+            open={this.state.addSharedDocPopoverOpen}
+            anchorEl={this.state.anchorElSharedDoc}
+            anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+            targetOrigin={{horizontal: 'left', vertical: 'top'}}
+            onRequestClose={() => this.closeAddSharedDocPopover()}
+            animation={PopoverAnimationVertical}
+          >
+            <TextField 
+              onChange={(event) => this.handleSharedDoc(event)}
+              hintText="Paste the shared document ID here"
+            />
+            <RaisedButton 
+              style={{marginLeft: '2vw'}}
+              label="Add" 
+              primary={true}
+              onClick={() => this.addSharedDoc()}
+            />
+          </Popover> 
+        </div>  
       </div>
     );
   }

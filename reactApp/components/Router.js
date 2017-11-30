@@ -29,11 +29,10 @@ class Router extends React.Component {
 
   // OTTO: you changed the routes to make it easy to work on different components. Before finishing make sure that you change them back. 
   render() {
-    // console.log('Router: this.props.userId = ', this.props.userId);
     return (
       <div>
           <Route path='/' 
-            render={() => this.props.userId ? <div></div> : <Redirect to="/Login" /> }
+            render={() => this.props.userId ? <div></div> : <Redirect to="/Portal" /> }
           /> 
           
           <Route path='/Login' 

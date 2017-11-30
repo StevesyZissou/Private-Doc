@@ -47,7 +47,6 @@ class Login extends React.Component {
 
   handleUsername (event) {
     this.setState({username: event.target.value});
-    console.log('username = ', this.state.username);
   }
 
   handlePassword (event) {
@@ -60,8 +59,7 @@ class Login extends React.Component {
       password: this.state.password
     })
     .then((res) => {
-      console.log(res.data);
-      console.log("you have successfully sent a login request!");
+      console.log(res.data.userId);
       this.props.handleLogin(res.data.userId, res.data.docs);
     })
     .catch((err) => {
